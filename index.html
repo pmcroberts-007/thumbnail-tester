@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>YouTube</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23FF0000' d='M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2C0 8.1 0 12 0 12s0 3.9.5 5.8a3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1c.5-1.9.5-5.8.5-5.8s0-3.9-.5-5.8z'/%3E%3Cpath fill='white' d='M9.6 15.6V8.4L15.8 12z'/%3E%3C/svg%3E" />
+<style>
+  :root {
+    --bg: #0f0f0f;
+    --bg-2: #1f1f1f;
+    --bg-hover: #272727;
+    --text: #f1f1f1;
+    --text-secondary: #aaa;
+    --border: #303030;
+    --chip-bg: #272727;
+    --chip-active: #f1f1f1;
+    --chip-active-text: #0f0f0f;
+    --red: #ff0000;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Roboto", "Arial", sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /* ===== Header ===== */
+  header.top {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    background: var(--bg);
+    z-index: 1000;
+  }
+  .top-left { display: flex; align-items: center; min-width: 169px; }
+  .hamburger {
+    width: 40px; height: 40px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 50%;
+    cursor: pointer;
+  }
+  .hamburger:hover { background: var(--bg-hover); }
+  .logo {
+    display: flex; align-items: center;
+    margin-left: 14px;
+    cursor: pointer;
+  }
+  .logo svg { height: 20px; }
+  .logo .country { font-size: 10px; color: var(--text-secondary); margin-left: 2px; vertical-align: top; }
+
+  .top-center {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    padding: 0 40px;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  .search-wrap { display: flex; flex: 1; max-width: 600px; }
+  .search-box {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    height: 40px;
+    border: 1px solid #303030;
+    border-radius: 40px 0 0 40px;
+    background: #121212;
+    padding: 0 4px 0 16px;
+  }
+  .search-box input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text);
+    font-size: 16px;
+    font-family: inherit;
+  }
+  .search-box input::placeholder { color: #888; }
+  .search-btn {
+    width: 64px;
+    height: 40px;
+    background: #222;
+    border: 1px solid #303030;
+    border-left: none;
+    border-radius: 0 40px 40px 0;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+  }
+  .search-btn:hover { background: #303030; }
+  .mic {
+    width: 40px; height: 40px;
+    margin-left: 12px;
+    background: #1f1f1f;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+  }
+  .mic:hover { background: #303030; }
+
+  .top-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 225px;
+    justify-content: flex-end;
+  }
+  .icon-btn {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    position: relative;
+  }
+  .icon-btn:hover { background: var(--bg-hover); }
+  .icon-btn .badge {
+    position: absolute;
+    top: 4px; right: 2px;
+    background: var(--red);
+    color: white;
+    font-size: 10px;
+    font-weight: 500;
+    border-radius: 10px;
+    padding: 1px 5px;
+    min-width: 14px;
+    text-align: center;
+  }
+  .create-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    height: 36px;
+    padding: 0 16px 0 12px;
+    background: var(--bg-hover);
+    border-radius: 18px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  .create-btn:hover { background: #3f3f3f; }
+  .profile {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #ff6b6b, #c44569);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 600;
+    font-size: 14px;
+    color: white;
+    cursor: pointer;
+    margin-left: 4px;
+  }
+
+  /* ===== Sidebar ===== */
+  aside.sidebar {
+    position: fixed;
+    top: 56px; left: 0;
+    bottom: 0;
+    width: 240px;
+    overflow-y: auto;
+    padding: 12px 0;
+    scrollbar-width: thin;
+    scrollbar-color: #555 transparent;
+  }
+  aside.sidebar::-webkit-scrollbar { width: 8px; }
+  aside.sidebar::-webkit-scrollbar-thumb { background: transparent; border-radius: 4px; }
+  aside.sidebar:hover::-webkit-scrollbar-thumb { background: #555; }
+
+  .sb-section { padding: 8px 12px; border-bottom: 1px solid var(--border); }
+  .sb-section:last-child { border-bottom: none; }
+  .sb-title {
+    font-size: 16px;
+    font-weight: 500;
+    padding: 8px 12px 4px;
+    color: var(--text);
+  }
+  .sb-item {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    height: 40px;
+    padding: 0 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  .sb-item:hover { background: var(--bg-hover); }
+  .sb-item.active { background: var(--bg-hover); font-weight: 500; }
+  .sb-item .ico { width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .sb-item .label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sb-avatar {
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    background: #444;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px;
+    font-weight: 600;
+    color: white;
+    flex-shrink: 0;
+  }
+
+  /* ===== Main content ===== */
+  main.content {
+    margin-left: 240px;
+    margin-top: 56px;
+    padding: 24px 40px;
+  }
+
+  /* Chips */
+  .chips {
+    position: sticky;
+    top: 56px;
+    background: var(--bg);
+    z-index: 500;
+    display: flex;
+    gap: 12px;
+    padding: 12px 0 16px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .chips::-webkit-scrollbar { display: none; }
+  .chip {
+    flex-shrink: 0;
+    height: 32px;
+    padding: 0 12px;
+    display: flex;
+    align-items: center;
+    background: var(--chip-bg);
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .chip:hover { background: #3f3f3f; }
+  .chip.active {
+    background: var(--chip-active);
+    color: var(--chip-active-text);
+  }
+
+  /* Video grid */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+    gap: 40px 16px;
+    padding-top: 8px;
+  }
+  .video { cursor: pointer; }
+  .thumb {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: #1f1f1f;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .thumb img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .duration {
+    position: absolute;
+    bottom: 8px; right: 8px;
+    background: rgba(0,0,0,0.8);
+    color: white;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 2px 4px;
+    border-radius: 4px;
+  }
+  .meta {
+    display: flex;
+    gap: 12px;
+    margin-top: 12px;
+  }
+  .ch-avatar {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .info { flex: 1; min-width: 0; }
+  .title {
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 20px;
+    color: var(--text);
+    margin: 0 0 4px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .channel {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin: 0;
+  }
+  .stats {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin: 0;
+  }
+  .channel:hover { color: var(--text); }
+  .menu-dot {
+    width: 24px; height: 24px;
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text-secondary);
+  }
+
+  /* Upload slot */
+  .upload-slot {
+    background: #181818;
+    border: 2px dashed #3f3f3f;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.15s ease;
+  }
+  .upload-slot:hover {
+    background: #222;
+    border-color: #606060;
+  }
+  .upload-slot .plus {
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    background: var(--red);
+    display: flex; align-items: center; justify-content: center;
+    color: white;
+    font-size: 32px;
+    font-weight: 300;
+    line-height: 1;
+  }
+  .upload-slot .up-text {
+    color: var(--text);
+    font-size: 14px;
+    font-weight: 500;
+  }
+  .upload-slot .up-sub {
+    color: var(--text-secondary);
+    font-size: 12px;
+  }
+  .upload-slot.has-image { border: none; }
+  .upload-slot.has-image .plus,
+  .upload-slot.has-image .up-text,
+  .upload-slot.has-image .up-sub { display: none; }
+  .upload-slot.has-image .hover-replace {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    color: white;
+    font-size: 14px;
+    font-weight: 500;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .upload-slot.has-image:hover .hover-replace { display: flex; }
+  .upload-slot.drag-over {
+    background: #2a2a2a;
+    border-color: var(--red);
+  }
+  .toast {
+    position: fixed;
+    bottom: 24px; left: 50%;
+    transform: translateX(-50%);
+    background: #272727;
+    color: #fff;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    z-index: 2000;
+    opacity: 0;
+    transition: opacity 0.2s;
+    pointer-events: none;
+  }
+  .toast.show { opacity: 1; }
+
+  /* Test badge */
+  .test-badge {
+    position: absolute;
+    top: 8px; left: 8px;
+    background: var(--red);
+    color: white;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 4px;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+    z-index: 2;
+  }
+
+  #fileInput { display: none; }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-left">
+    <div class="hamburger" title="Menu">
+      <svg viewBox="0 0 24 24" width="24" height="24" fill="#fff"><path d="M21 6H3V5h18v1zm0 5H3v1h18v-1zm0 6H3v1h18v-1z"/></svg>
+    </div>
+    <div class="logo">
+      <svg viewBox="0 0 90 20"><g><path d="M27.97 3.12c-.32-1.2-1.26-2.14-2.46-2.46C23.34.1 14.4.1 14.4.1s-8.95 0-11.12.56A3.53 3.53 0 0 0 .82 3.12C.26 5.29.26 9.82.26 9.82s0 4.53.56 6.7c.32 1.2 1.26 2.14 2.46 2.46 2.17.56 11.12.56 11.12.56s8.95 0 11.12-.56a3.53 3.53 0 0 0 2.46-2.46c.56-2.17.56-6.7.56-6.7s0-4.53-.56-6.7z" fill="#f00"/><path d="M11.55 14.11l7.43-4.29-7.43-4.29z" fill="#fff"/></g><g fill="#fff"><path d="M41.5 17.96c-.56-.38-.97-.97-1.2-1.77-.23-.8-.35-1.87-.35-3.2v-1.81c0-1.35.13-2.43.4-3.25.27-.82.69-1.42 1.25-1.79.57-.38 1.31-.56 2.23-.56.9 0 1.63.19 2.18.57s.96.98 1.22 1.8c.26.82.39 1.9.39 3.23v1.81c0 1.33-.13 2.4-.38 3.22-.25.81-.66 1.4-1.22 1.78-.56.37-1.32.56-2.28.56-.98.01-1.75-.18-2.24-.59zm3.1-1.94c.15-.4.23-1.05.23-1.96v-3.82c0-.88-.07-1.52-.23-1.93-.15-.41-.42-.62-.81-.62-.37 0-.64.21-.79.62-.15.41-.23 1.05-.23 1.93v3.82c0 .91.07 1.56.22 1.96.14.4.41.6.8.6.39 0 .67-.2.81-.6zm33.65-2.17v.63c0 .8.02 1.4.07 1.8.05.4.14.69.29.87.15.18.38.27.69.27.41 0 .7-.16.85-.48.16-.32.24-.85.25-1.59l2.34.14c.01.1.02.25.02.43 0 1.12-.31 1.96-.92 2.51s-1.48.83-2.6.83c-1.34 0-2.28-.42-2.82-1.26-.54-.84-.81-2.15-.81-3.91v-2.11c0-1.82.28-3.14.84-3.98.56-.84 1.52-1.26 2.87-1.26.93 0 1.65.17 2.15.51s.85.87 1.06 1.58c.2.72.3 1.71.3 2.98v2.08h-4.59zm.34-5.11c-.14.17-.23.46-.28.86s-.07 1-.07 1.81v.89h2.01v-.89c0-.8-.03-1.4-.08-1.81s-.15-.69-.29-.86c-.14-.17-.35-.26-.64-.26-.3-.01-.52.08-.65.26zM35.02 14.07L31.93 2.92h2.7l1.08 5.05c.28 1.24.48 2.3.61 3.18h.08c.09-.63.29-1.68.61-3.16l1.12-5.07h2.7l-3.13 11.15v5.35h-2.68v-5.35zM52.56 6.28v14.14h-2.13l-.24-1.48h-.06c-.58 1.12-1.45 1.68-2.61 1.68-.8 0-1.4-.26-1.79-.79-.39-.53-.58-1.35-.58-2.48V6.28h2.72v10.93c0 .55.06.93.18 1.16.12.23.32.34.6.34.24 0 .47-.07.69-.22.22-.15.38-.33.49-.55V6.28h2.73zm13.97 0v14.14h-2.13l-.24-1.48h-.06c-.58 1.12-1.45 1.68-2.61 1.68-.8 0-1.4-.26-1.79-.79-.39-.53-.58-1.35-.58-2.48V6.28h2.72v10.93c0 .55.06.93.18 1.16.12.23.32.34.6.34.24 0 .47-.07.69-.22.22-.15.38-.33.49-.55V6.28h2.73z"/><path d="M59.96 5.09h-2.7V19.7h-2.66V5.09h-2.7V2.92h8.06v2.17zM71.6 8.2c-.17-.77-.43-1.32-.8-1.67-.37-.35-.87-.52-1.52-.52-.5 0-.97.14-1.41.43-.44.28-.78.65-1.01 1.11h-.02V2.34h-2.62v17.36h2.25l.28-1.15h.06c.21.41.53.73.96.97.43.23.9.35 1.42.35.93 0 1.62-.43 2.06-1.29.44-.86.66-2.2.66-4.03v-1.94c.01-1.37-.08-2.44-.25-3.21zm-2.5 4.97c0 .89-.04 1.59-.11 2.1-.07.51-.2.87-.37 1.09-.18.22-.41.32-.71.32-.23 0-.44-.05-.64-.16-.19-.11-.35-.27-.47-.48V9.1c.09-.33.25-.6.48-.81.22-.21.47-.31.73-.31.28 0 .5.11.66.34s.26.6.32 1.13c.06.53.09 1.28.09 2.25v1.47zm18.16-.86c0-1.26-.1-2.23-.31-2.9-.21-.67-.54-1.16-1.01-1.46-.47-.3-1.13-.45-2-.45-.72 0-1.34.15-1.84.45-.51.3-.88.73-1.11 1.29h-.02V2.34h-2.55v17.36h2.15l.27-1.13h.06c.22.4.54.72.96.95s.89.35 1.42.35c.91 0 1.59-.42 2.02-1.26.43-.84.65-2.16.65-3.95v-2.35zm-2.51 1.85c0 .9-.04 1.6-.11 2.11-.07.51-.2.87-.37 1.09-.18.22-.41.32-.71.32-.23 0-.44-.05-.64-.16-.19-.11-.35-.27-.47-.48V9.08c.09-.33.25-.59.48-.8.22-.21.47-.31.73-.31.28 0 .5.11.66.34.16.22.26.6.32 1.13.06.53.09 1.28.09 2.25v2.47z"/></g></svg>
+      <span class="country">US</span>
+    </div>
+  </div>
+
+  <div class="top-center">
+    <div class="search-wrap">
+      <div class="search-box">
+        <input type="text" placeholder="Search" />
+      </div>
+      <div class="search-btn" title="Search">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="#fff"><path d="M20.87 20.17l-5.59-5.59C16.35 13.35 17 11.75 17 10c0-3.87-3.13-7-7-7s-7 3.13-7 7 3.13 7 7 7c1.75 0 3.35-.65 4.58-1.71l5.59 5.59.7-.71zM10 16c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6z"/></svg>
+      </div>
+      <div class="mic" title="Search with your voice">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="#fff"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"/></svg>
+      </div>
+    </div>
+  </div>
+
+  <div class="top-right">
+    <div class="create-btn">
+      <svg viewBox="0 0 24 24" width="24" height="24" fill="#fff"><path d="M14 13h-3v3H9v-3H6v-2h3V8h2v3h3v2zm-1-9H7C3.69 4 1 6.69 1 10s2.69 6 6 6h1v-2H7c-2.21 0-4-1.79-4-4s1.79-4 4-4h6c2.21 0 4 1.79 4 4 0 .34-.05.67-.13.99l1.67 1.67A5.97 5.97 0 0 0 19 10c0-3.31-2.69-6-6-6zm9.54 12.46L19.07 12 17 14.07l3.46 3.46L17 21h7v-7l-1.46 1.46z"/></svg>
+      <span>Create</span>
+    </div>
+    <div class="icon-btn" title="Notifications">
+      <svg viewBox="0 0 24 24" width="24" height="24" fill="#fff"><path d="M10 20h4c0 1.1-.9 2-2 2s-2-.9-2-2zm10-2.65V19H4v-1.65l2-1.88v-5.15C6 7.4 7.56 5.1 10 4.34v-.38c0-1.42 1.49-2.5 2.99-1.76.65.32 1.01 1.03 1.01 1.76v.39c2.44.75 4 3.06 4 5.98v5.15l2 1.87zm-1 .42l-2-1.88v-5.47c0-2.47-1.19-4.36-3.13-5.1-1.26-.53-2.64-.5-3.84.03C8.15 6.11 7 7.99 7 10.42v5.47l-2 1.88V18h14v-.23z"/></svg>
+      <span class="badge">9+</span>
+    </div>
+    <div class="profile">P</div>
+  </div>
+</header>
+
+<aside class="sidebar">
+  <div class="sb-section">
+    <div class="sb-item active"><span class="ico"><svg viewBox="0 0 24 24" width="24" height="24" fill="#fff"><path d="M4 10v11h6v-7h4v7h6V10L12 3z"/></svg></span><span class="label">Home</span></div>
+    <div class="sb-item"><span class="ico"><svg viewBox="0 0 24 24" width="24" height="24" fill="#fff"><path d="M10 14.65v-5.3L15 12l-5 2.65zM12 3C6.48 3 2 7.48 2 13s4.48 10 10 10 10-4.48 10-10S17.52 3 12 3z"/></svg></span><span class="label">Shorts</span></div>
+    <div class="sb-item"><span class="ico"><svg viewBox="0 0 24 24" width="24" height="24" fill="#fff"><path d="M10 18v-6l5 3-5 3zm7-15H7v1h10V3zm3 3H4v1h16V6zm2 3H2v12h20V9zM3 10h18v10H3V10z"/></svg></span><span class="label">Subscriptions</span></div>
+  </div>
+
+  <div class="sb-section">
+    <div class="sb-title">You ›</div>
+    <div class="sb-item"><span class="ico"><svg viewBox="0 0 24 24" width="24" height="24" fill="#fff"><path d="M10 8v8l6-4-6-4zm2-6C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/></svg></span><span class="label">History</span></div>
+    <div class="sb-item"><span class="ico"><svg viewBox="0 0 24 24" width="24" height="24" fill="#fff"><path d="M22 7H2v1h20V7zm-9 5H2v1h11v-1zM2 17h11v1H2v-1zm18.79-3.64l1.08.72L17 18.5 13.5 16l.53-.85 2.97 1.85 4.79-3.64z"/></svg></span><span class="label">Playlists</span></div>
+    <div class="sb-item"><span class="ico"><svg viewBox="0 0 24 24" width="24" height="24" fill="#fff"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 11.5v-5l4 2.5-4 2.5z"/></svg></span><span class="label">Your videos</span></div>
+    <div class="sb-item"><span class="ico"><svg viewBox="0 0 24 24" width="24" height="24" fill="#fff"><path d="M14.97 16.95L10 13.87V7h2v5.76l4.03 2.49-1.06 1.7zM22 12c0 5.52-4.48 10-10 10S2 17.52 2 12 6.48 2 12 2s10 4.48 10 10z"/></svg></span><span class="label">Watch later</span></div>
+    <div class="sb-item"><span class="ico"><svg viewBox="0 0 24 24" width="24" height="24" fill="#fff"><path d="M18.77 11h-4.23l1.52-4.94C16.38 5.03 15.54 4 14.38 4c-.58 0-1.14.24-1.52.65L7 11H3v10h4h1h9.43c1.06 0 1.98-.67 2.19-1.61l1.34-6C21.23 12.15 20.18 11 18.77 11z"/></svg></span><span class="label">Liked videos</span></div>
+  </div>
+
+  <div class="sb-section">
+    <div class="sb-title">Subscriptions</div>
+    <div class="sb-item"><div class="sb-avatar" style="background:#e74c3c">MK</div><span class="label">Marques Brownlee</span></div>
+    <div class="sb-item"><div class="sb-avatar" style="background:#2980b9">LT</div><span class="label">Linus Tech Tips</span></div>
+    <div class="sb-item"><div class="sb-avatar" style="background:#f39c12">MR</div><span class="label">MrBeast</span></div>
+    <div class="sb-item"><div class="sb-avatar" style="background:#16a085">VS</div><span class="label">Veritasium</span></div>
+    <div class="sb-item"><div class="sb-avatar" style="background:#8e44ad">FM</div><span class="label">Fireship</span></div>
+    <div class="sb-item"><div class="sb-avatar" style="background:#c0392b">KU</div><span class="label">Kurzgesagt</span></div>
+    <div class="sb-item"><div class="sb-avatar" style="background:#27ae60">MP</div><span class="label">Mark Rober</span></div>
+    <div class="sb-item"><div class="sb-avatar" style="background:#d35400">CG</div><span class="label">Casey Neistat</span></div>
+    <div class="sb-item"><div class="sb-avatar" style="background:#2c3e50">AI</div><span class="label">Two Minute Papers</span></div>
+  </div>
+
+  <div class="sb-section">
+    <div class="sb-title">Explore</div>
+    <div class="sb-item"><span class="ico"><svg viewBox="0 0 24 24" width="24" height="24" fill="#fff"><path d="M14.97 16.95L10 13.87V7h2v5.76l4.03 2.49-1.06 1.7z M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/></svg></span><span class="label">Trending</span></div>
+    <div class="sb-item"><span class="ico"><svg viewBox="0 0 24 24" width="24" height="24" fill="#fff"><path d="M12 3.09L5 8.41V19h4v-6h6v6h4V8.42L12 3.09"/></svg></span><span class="label">Music</span></div>
+    <div class="sb-item"><span class="ico"><svg viewBox="0 0 24 24" width="24" height="24" fill="#fff"><path d="M10 16.5l6-4.5-6-4.5v9z"/></svg></span><span class="label">Gaming</span></div>
+    <div class="sb-item"><span class="ico"><svg viewBox="0 0 24 24" width="24" height="24" fill="#fff"><path d="M20 4H4v16h16V4z"/></svg></span><span class="label">News</span></div>
+    <div class="sb-item"><span class="ico"><svg viewBox="0 0 24 24" width="24" height="24" fill="#fff"><path d="M19 3H5c-1.11 0-2 .89-2 2v14c0 1.11.89 2 2 2h14c1.11 0 2-.89 2-2V5c0-1.11-.89-2-2-2z"/></svg></span><span class="label">Sports</span></div>
+  </div>
+</aside>
+
+<main class="content">
+  <div class="chips">
+    <div class="chip active">All</div>
+    <div class="chip">Music</div>
+    <div class="chip">Live</div>
+    <div class="chip">Gaming</div>
+    <div class="chip">Mixes</div>
+    <div class="chip">Podcasts</div>
+    <div class="chip">Computer programming</div>
+    <div class="chip">News</div>
+    <div class="chip">Recently uploaded</div>
+    <div class="chip">AI</div>
+    <div class="chip">Graphic design</div>
+    <div class="chip">Film criticisms</div>
+    <div class="chip">Recently posted</div>
+    <div class="chip">Watched</div>
+    <div class="chip">New to you</div>
+  </div>
+
+  <div class="grid" id="grid"></div>
+</main>
+
+<input type="file" id="fileInput" accept="image/*" />
+
+<script>
+  // ----- Sample videos -----
+  // Thumbnails: use picsum.photos (seeded) for realistic imagery. Runs offline? Requires internet for first load; cached after.
+  const videos = [
+    { title: "I Built the World's Largest LEGO Pyramid (50,000 Bricks)", channel: "MrBeast", avatar:"#f39c12", views: "28M", when: "2 days ago", duration: "14:02", seed: "lego" },
+    // slot 2 is replaced with uploader
+    { title: "The Truth About Quantum Computers Nobody Tells You", channel: "Veritasium", avatar:"#16a085", views: "4.1M", when: "1 week ago", duration: "22:15", seed: "quantum" },
+    { title: "Reviewing the iPhone 18 Pro Max: Finally a Real Upgrade?", channel: "Marques Brownlee", avatar:"#e74c3c", views: "6.8M", when: "3 days ago", duration: "11:47", seed: "phone" },
+    { title: "Building a $10,000 Gaming PC from Scratch", channel: "Linus Tech Tips", avatar:"#2980b9", views: "2.3M", when: "5 days ago", duration: "18:34", seed: "pc" },
+    { title: "React vs Svelte vs Solid — Which One Wins in 2026?", channel: "Fireship", avatar:"#8e44ad", views: "1.2M", when: "6 hours ago", duration: "8:21", seed: "code" },
+    { title: "What Would Happen If You Fell Into a Black Hole?", channel: "Kurzgesagt – In a Nutshell", avatar:"#c0392b", views: "12M", when: "2 weeks ago", duration: "9:58", seed: "space" },
+    { title: "I Spent 24 Hours in the Amazon Rainforest Alone", channel: "Mark Rober", avatar:"#27ae60", views: "18M", when: "4 days ago", duration: "16:40", seed: "jungle" },
+    { title: "Cinematic B-Roll You Can Actually Shoot (Tutorial)", channel: "Casey Neistat", avatar:"#d35400", views: "890K", when: "1 day ago", duration: "12:03", seed: "camera" },
+    { title: "Google's New AI Can Now Code Entire Apps — Two Minute Papers", channel: "Two Minute Papers", avatar:"#2c3e50", views: "520K", when: "9 hours ago", duration: "6:12", seed: "ai" },
+    { title: "The Cheapest Country in Europe in 2026 (Full Travel Vlog)", channel: "Yes Theory", avatar:"#1abc9c", views: "2.7M", when: "1 week ago", duration: "24:18", seed: "travel" },
+    { title: "Why Every Chef Is Suddenly Obsessed With This Knife", channel: "Epicurious", avatar:"#e67e22", views: "1.5M", when: "3 days ago", duration: "10:29", seed: "knife" },
+    { title: "Ranking Every NBA Jersey from Worst to Best", channel: "SB Nation", avatar:"#34495e", views: "640K", when: "2 days ago", duration: "15:51", seed: "sports" },
+    { title: "Restoring a 1985 Game Boy to Brand New Condition", channel: "Odd Tinkering", avatar:"#7f8c8d", views: "3.4M", when: "5 days ago", duration: "13:07", seed: "retro" },
+    { title: "LoFi Beats to Code To — 24/7 Live Radio", channel: "Chillhop Music", avatar:"#9b59b6", views: "1.1M watching", when: "", duration: "LIVE", seed: "music" },
+    { title: "The Physics of Skateboarding Explained in 60 Seconds", channel: "MinutePhysics", avatar:"#3498db", views: "780K", when: "1 day ago", duration: "1:04", seed: "skate" },
+  ];
+
+  const UPLOAD_INDEX = 1; // slot 2 (zero-based)
+
+  const grid = document.getElementById('grid');
+  const fileInput = document.getElementById('fileInput');
+
+  // Your test video metadata (shown in upload slot + after upload)
+  const testVideo = {
+    title: "I Tried Making a Million Dollars in 30 Days (Crazy Results)",
+    channel: "Your Channel",
+    avatar: "#ff0000",
+    views: "1.2M",
+    when: "3 hours ago",
+    duration: "12:34"
+  };
+
+  let uploadedImage = null;
+
+  function thumbURL(seed) {
+    return `https://picsum.photos/seed/${encodeURIComponent(seed)}/640/360`;
+  }
+
+  function avatarSVG(color, letter) {
+    return `<div class="ch-avatar" style="background:${color};display:flex;align-items:center;justify-content:center;color:#fff;font-weight:600;font-size:14px;">${letter}</div>`;
+  }
+
+  function render() {
+    grid.innerHTML = '';
+    videos.forEach((v, i) => {
+      const el = document.createElement('div');
+      el.className = 'video';
+
+      if (i === UPLOAD_INDEX) {
+        const hasImg = !!uploadedImage;
+        el.innerHTML = `
+          <div class="thumb upload-slot ${hasImg ? 'has-image' : ''}" id="uploadThumb">
+            <span class="test-badge">Test Slot</span>
+            ${hasImg ? `<img src="${uploadedImage}" alt="Your thumbnail" />` : ''}
+            <div class="plus">+</div>
+            <div class="up-text">Upload thumbnail</div>
+            <div class="up-sub">Click, drag & drop, or paste (Ctrl+V)</div>
+            <div class="hover-replace">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="#fff"><path d="M9 16h6v-6h4l-7-7-7 7h4v6zm-4 2h14v2H5v-2z"/></svg>
+              Click to replace
+            </div>
+            ${hasImg ? `<div class="duration">${testVideo.duration}</div>` : ''}
+          </div>
+          <div class="meta">
+            ${avatarSVG(testVideo.avatar, 'Y')}
+            <div class="info">
+              <p class="title">${testVideo.title}</p>
+              <p class="channel">${testVideo.channel}</p>
+              <p class="stats">${testVideo.views} views • ${testVideo.when}</p>
+            </div>
+            <div class="menu-dot">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="#aaa"><path d="M12 16.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5-1.5-.67-1.5-1.5.67-1.5 1.5-1.5zm0-6c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5-1.5-.67-1.5-1.5.67-1.5 1.5-1.5zm0-6c.83 0 1.5.67 1.5 1.5S12.83 7.5 12 7.5s-1.5-.67-1.5-1.5S11.17 4.5 12 4.5z"/></svg>
+            </div>
+          </div>
+        `;
+        el.querySelector('.upload-slot').addEventListener('click', () => fileInput.click());
+      } else {
+        el.innerHTML = `
+          <div class="thumb">
+            <img src="${thumbURL(v.seed)}" alt="" loading="lazy" />
+            <div class="duration">${v.duration}</div>
+          </div>
+          <div class="meta">
+            ${avatarSVG(v.avatar, v.channel[0])}
+            <div class="info">
+              <p class="title">${v.title}</p>
+              <p class="channel">${v.channel}</p>
+              <p class="stats">${v.views}${v.when ? ' views • ' + v.when : ''}</p>
+            </div>
+            <div class="menu-dot">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="#aaa"><path d="M12 16.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5-1.5-.67-1.5-1.5.67-1.5 1.5-1.5zm0-6c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5-1.5-.67-1.5-1.5.67-1.5 1.5-1.5zm0-6c.83 0 1.5.67 1.5 1.5S12.83 7.5 12 7.5s-1.5-.67-1.5-1.5S11.17 4.5 12 4.5z"/></svg>
+            </div>
+          </div>
+        `;
+      }
+
+      grid.appendChild(el);
+    });
+  }
+
+  function loadImageFile(file) {
+    if (!file || !file.type.startsWith('image/')) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      uploadedImage = ev.target.result;
+      try { localStorage.setItem('yt_thumb', uploadedImage); } catch(err) {}
+      render();
+      showToast('Thumbnail updated');
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function showToast(msg) {
+    let t = document.getElementById('toast');
+    if (!t) {
+      t = document.createElement('div');
+      t.id = 'toast';
+      t.className = 'toast';
+      document.body.appendChild(t);
+    }
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(t._timer);
+    t._timer = setTimeout(() => t.classList.remove('show'), 1800);
+  }
+
+  fileInput.addEventListener('change', (e) => {
+    loadImageFile(e.target.files[0]);
+    fileInput.value = '';
+  });
+
+  // Drag & drop anywhere on the page (targets the upload slot)
+  ['dragenter', 'dragover'].forEach(evt => {
+    document.addEventListener(evt, (e) => {
+      e.preventDefault();
+      const slot = document.getElementById('uploadThumb');
+      if (slot) slot.classList.add('drag-over');
+    });
+  });
+  ['dragleave', 'drop'].forEach(evt => {
+    document.addEventListener(evt, (e) => {
+      e.preventDefault();
+      if (evt === 'dragleave' && e.relatedTarget) return;
+      const slot = document.getElementById('uploadThumb');
+      if (slot) slot.classList.remove('drag-over');
+    });
+  });
+  document.addEventListener('drop', (e) => {
+    e.preventDefault();
+    const file = e.dataTransfer.files[0];
+    if (file) loadImageFile(file);
+  });
+
+  // Paste from clipboard (Ctrl+V)
+  document.addEventListener('paste', (e) => {
+    const items = e.clipboardData?.items;
+    if (!items) return;
+    for (const item of items) {
+      if (item.type.startsWith('image/')) {
+        loadImageFile(item.getAsFile());
+        break;
+      }
+    }
+  });
+
+  // Restore last uploaded thumbnail
+  try {
+    const saved = localStorage.getItem('yt_thumb');
+    if (saved) uploadedImage = saved;
+  } catch(err) {}
+
+  // Chips toggle
+  document.querySelectorAll('.chip').forEach(c => {
+    c.addEventListener('click', () => {
+      document.querySelectorAll('.chip').forEach(x => x.classList.remove('active'));
+      c.classList.add('active');
+    });
+  });
+
+  render();
+</script>
+</body>
+</html>
